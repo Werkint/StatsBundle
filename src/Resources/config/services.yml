@@ -1,0 +1,14 @@
+services:
+    # Статистика
+    werkint.stats:
+        class: Werkint\Bundle\StatsBundle\Service\StatsDirector
+        arguments:
+            - @security.context
+        tags:
+            - { name: werkint.redis.cache, scope: root, ns: werkint.stats }
+    werkint.stats.stuffprovider:
+        class: Werkint\Bundle\StatsBundle\Service\StatsStuffProvider
+        arguments:
+            - @werkint.stats
+        tags:
+            - { name: werkint.stuff.provider, class: werkint.stats, tick: 10 }

@@ -1,0 +1,32 @@
+{
+    "name":        "werkint/stats-bundle",
+    "type":        "symfony-bundle",
+    "description": "Stats module",
+    "license":     "GPL-3.0+",
+    "authors":     [
+        {
+            "name":  "Bogdan Yurov",
+            "email": "bogdan@yurov.me"
+        }
+    ],
+    "require":     {
+        "symfony/framework-bundle": "*",
+
+        "werkint/command-bundle": "*",
+        "werkint/redis-bundle":   "*",
+
+        "php": ">=5.4"
+    },
+    "autoload":    {
+        "psr-4": {
+            "Werkint\\Bundle\\StatsBundle\\": "src/"
+        }
+    },
+    "extra":       {
+        "branch-alias": {
+            "dev-master": "0.1.x-dev"
+        }
+    },
+
+    "minimum-stability": "dev"
+}

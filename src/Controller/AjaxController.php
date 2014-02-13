@@ -1,0 +1,39 @@
+<?php
+namespace Werkint\Bundle\StatsBundle\Controller;
+
+use Diplom\Bundle\AppBundle\Service\Form\ContactModel;
+use Diplom\Data\Model\BaseController;
+use Symfony\Component\Form\FormInterface;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
+use Werkint\Bundle\WebappBundle\Annotation as Rest;
+use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+
+/**
+ * AjaxController.
+ *
+ * @author Bogdan Yurov <bogdan@yurov.me>
+ */
+class AjaxController extends Controller
+{
+    // -- Services ---------------------------------------
+
+    protected function serviceStats()
+    {
+        return $this->get('werkint.stats');
+    }
+
+    // -- Actions ---------------------------------------
+
+    public function statAction(Request $req, $class)
+    {
+        $count = $this->serviceStats()->getStat(
+            $class,
+            (array)$req->request->get('params'),
+            true
+        );
+        return new Response(json_encode([
+            'count' => $count,
+        ]));
+    }
+}
