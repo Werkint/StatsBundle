@@ -31,14 +31,15 @@ class StatsProviderPass implements
 
         $list = $container->findTaggedServiceIds(static::CLASS_TAG);
         foreach ($list as $id => $attributes) {
-            $a = $attributes[0];
-            $definition->addMethodCall(
-                'addProvider', [
-                    $a['class'],
-                    new Reference($id),
-                    (bool)$a['realtime']
-                ]
-            );
+            foreach ($attributes as $a) {
+                $definition->addMethodCall(
+                    'addProvider', [
+                        $a['class'],
+                        new Reference($id),
+                        isset($a['realtime']) ? (bool)$a['realtime'] : false
+                    ]
+                );
+            }
         }
     }
 
