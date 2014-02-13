@@ -2,6 +2,7 @@
 namespace Werkint\Bundle\StatsBundle\Service;
 
 use Doctrine\Common\Cache\CacheProvider;
+use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 
 /**
@@ -29,26 +30,41 @@ class StatsDirector
     }
 
     /**
-     * Returns stats by key
+     * Returns stats by key.
+     * if public is true - stat is checked for being available through controller
+     * if public is null - the stat is checked for role (if needed)
      *
-     * @param string $name
-     * @param array  $options
+     * @param string    $name
+     * @param array     $options
+     * @param bool|null $public
+     * @throws AccessDeniedException If acccess restricted
      * @return int
      */
-    public function getStat($name, array $options = [])
-    {
-        $row = $this->getProvider($name);
+    public function getStat(
+        $name,
+        array $options = [],
+        $public = null
+    ) {
+        $provider = $this->getProvider($name);
 
-        if ($row['cached'] === null) {
-            $val = $row['provider']->getStat($name, $options);
-        } else {
-            $val = $row['cached'];
-        }
-        if (!$row['realtime']) {
-            $this->setProviderCached($name, $val);
+        if ($public) {
+            if (!$provider->getProvider()->isPublic($name)) {
+                throw new AccessDeniedException('Public access to provider was restriced');
+            }
         }
 
-        return $val;
+        if ($public === null && !$this->security->isGranted('view', $provider)) {
+            throw new AccessDeniedException('Access to provider denied');
+        }
+
+        if ($provider->getCached() === false) {
+            $provider->setCached($provider->getProvider()->getStat($name, $options));
+            if (!$provider->isRealtime()) {
+                $this->saveToCache($provider);
+            }
+        }
+
+        return $provider->getCached();
     }
 
     /**
@@ -60,11 +76,12 @@ class StatsDirector
     {
         $i = 0;
         foreach ($this->providers as $name => $provider) {
-            if ($provider['realtime']) {
+            if ($provider->isRealtime()) {
                 continue;
             }
-            $this->setProviderCached($name, null);
-            $this->getStat($name);
+            $provider->setCached(false);
+            $this->saveToCache($provider);
+            $this->getStat($name, [], false);
             $i++;
         }
 
@@ -73,7 +90,7 @@ class StatsDirector
 
     // -- List ---------------------------------------
 
-    /** @var StatsProviderInterface[] */
+    /** @var ProviderRow[] */
     protected $providers = [];
 
     /**
@@ -86,15 +103,16 @@ class StatsDirector
         StatsProviderInterface $provider,
         $isRealtime
     ) {
-        $this->providers[$name] = [
-            'realtime' => $isRealtime,
-            'provider' => $provider,
-        ];
+        $this->providers[$name] = new ProviderRow(
+            $provider,
+            $name,
+            $isRealtime
+        );
     }
 
     /**
-     * @param $name
-     * @return StatsProviderInterface
+     * @param string $name
+     * @return ProviderRow
      * @throws \InvalidArgumentException
      */
     protected function getProvider($name)
@@ -102,41 +120,25 @@ class StatsDirector
         if (!isset($this->providers[$name])) {
             throw new \InvalidArgumentException('Wrong provider: ' . $name);
         }
-        $ret = $this->providers[$name];
-        $ret['cached'] = $ret['realtime'] ? null : $this->getProviderCached($name);
-
-        return $ret;
-    }
-
-    protected $cachedValues = [];
-
-    /**
-     * @param string $name
-     * @return mixed
-     */
-    protected function getProviderCached($name)
-    {
-        if (!array_key_exists($name, $this->cachedValues)) {
-            $this->cachedValues[$name] = $this->cache->fetch(
-                static::CACHE_PREFIX . $name
-            );
+        $provider = $this->providers[$name];
+        if ($provider->getCached() === false && !$provider->isRealtime()) {
+            $provider->setCached($this->cache->fetch(
+                static::CACHE_PREFIX . $provider->getName()
+            ));
         }
 
-        return $this->cachedValues[$name];
+        return $provider;
     }
 
     /**
-     * @param string $name
-     * @param mixed  $value
+     * @param ProviderRow $provider
      * @return bool
      */
-    protected function setProviderCached($name, $value)
+    protected function saveToCache(ProviderRow $provider)
     {
-        $this->cachedValues[$name] = $value;
-
         return $this->cache->save(
-            static::CACHE_PREFIX . $name,
-            $value
+            static::CACHE_PREFIX . $provider->getName(),
+            $provider->getCached()
         );
     }
 }

@@ -28,7 +28,7 @@ class AjaxController extends Controller
     public function statAction(Request $req, $class)
     {
         $count = $this->serviceStats()->getStat(
-            $class,
+            str_replace('_', '.', $class),
             (array)$req->request->get('params'),
             true
         );

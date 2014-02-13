@@ -14,4 +14,10 @@ interface StatsProviderInterface
      * @return int
      */
     public function getStat($name, array $options);
-} 
+
+    /**
+     * @param string $name
+     * @return bool
+     */
+    public function isPublic($name);
+}

@@ -1,5 +1,5 @@
 services:
-    # Статистика
+    # Services
     werkint.stats:
         class: Werkint\Bundle\StatsBundle\Service\StatsDirector
         arguments:
@@ -12,3 +12,20 @@ services:
             - @werkint.stats
         tags:
             - { name: werkint.stuff.provider, class: werkint.stats, tick: 10 }
+
+    # Security
+    werkint.stats.security.voter.statsvoter:
+        class: Werkint\Bundle\StatsBundle\Security\Voter\StatsVoter
+        arguments:
+            - @security.role_hierarchy
+            - %werkint_stats.roles%
+        tags:
+            - { name: security.voter }
+
+    # Twig extension
+    werkint.stats.twig.werkintstatsextension:
+        class: Werkint\Bundle\StatsBundle\Twig\WerkintStatsExtension
+        arguments:
+            - @werkint.stats
+        tags:
+            - { name: twig.extension }

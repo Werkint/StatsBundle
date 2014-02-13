@@ -21,6 +21,15 @@ class WerkintStatsExtension extends Extension
         array $configs,
         ContainerBuilder $container
     ) {
+        $processor = new Processor();
+        $config = $processor->processConfiguration(
+            new Configuration($this->getAlias()),
+            $configs
+        );
+        $container->setParameter(
+            $this->getAlias() . '.roles',
+            isset($config['roles']) ? $config['roles'] : []
+        );
         $loader = new YamlFileLoader(
             $container,
             new FileLocator(__DIR__ . '/../Resources/config')

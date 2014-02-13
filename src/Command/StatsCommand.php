@@ -44,7 +44,8 @@ class StatsCommand extends ContainerAwareCommand
 
         $ret = $this->serviceStatsDirector()->getStat(
             $name,
-            $options ? $options : []
+            $options ? $options : [],
+            false
         );
         $output->write('Stat "' . $name . '": ');
         $output->writeln(is_scalar($ret) ? '[SCALAR] ' . $ret : '[JSON] ' . json_encode($ret));
