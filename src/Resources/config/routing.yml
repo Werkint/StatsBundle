@@ -1,5 +1,3 @@
 werkint_stats:
   path:      /{class}.json
   defaults:  { _controller: WerkintStatsBundle:Ajax:stat }
-  options:
-    expose: true

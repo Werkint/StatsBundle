@@ -13,7 +13,7 @@ use Symfony\Component\DependencyInjection\Reference;
 class StatsProviderPass implements
     CompilerPassInterface
 {
-    const CLASS_SRV = 'werkint.app.stats';
+    const CLASS_SRV = 'werkint.stats';
     const CLASS_TAG = 'werkint.stats.provider';
 
     /**

@@ -54,6 +54,6 @@ class StatsCommand extends ContainerAwareCommand
 
     protected function serviceStatsDirector()
     {
-        return $this->getContainer()->get('werkint.app.stats');
+        return $this->getContainer()->get('werkint.stats');
     }
 }
