@@ -15,7 +15,7 @@ services:
 
     # Security
     werkint.stats.security.voter.statsvoter:
-        class: Werkint\Bundle\StatsBundle\Security\Voter\StatsVoter
+        class: Werkint\Bundle\StatsBundle\Service\Security\Voter\StatsVoter
         arguments:
             - @security.role_hierarchy
             - %werkint_stats.roles%
@@ -24,7 +24,7 @@ services:
 
     # Twig extension
     werkint.stats.twig.werkintstatsextension:
-        class: Werkint\Bundle\StatsBundle\Twig\WerkintStatsExtension
+        class: Werkint\Bundle\StatsBundle\Service\Twig\WerkintStatsExtension
         arguments:
             - @werkint.stats
         tags:

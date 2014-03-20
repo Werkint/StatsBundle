@@ -1,5 +1,5 @@
 <?php
-namespace Werkint\Bundle\StatsBundle\Security\Voter;
+namespace Werkint\Bundle\StatsBundle\Service\Security\Voter;
 
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
