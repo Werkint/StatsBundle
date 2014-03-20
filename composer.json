@@ -12,17 +12,17 @@
     "require":     {
         "symfony/framework-bundle": "*",
 
-        "werkint/command-bundle": "*",
-        "werkint/redis-bundle":   "*",
+        "werkint/framework-extra-bundle": "0.1.x-dev",
+        "werkint/redis-bundle":           "0.1.x-dev",
 
         "php": ">=5.4"
     },
     "require-dev": {
-        "werkint/webapp-bundle":  "0.1.x-dev"
+        "werkint/webapp-bundle": "0.1.x-dev"
     },
     "suggest":     {
-        "werkint/webapp-bundle":  "Support for Twig extension",
-        "twig/twig":              "Twig function for displaying stats in template"
+        "werkint/webapp-bundle": "Support for Twig extension",
+        "twig/twig":             "Twig function for displaying stats in template"
     },
     "autoload":    {
         "psr-4": {
