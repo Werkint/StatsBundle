@@ -1,9 +1,6 @@
 <?php
 namespace Werkint\Bundle\StatsBundle\Controller;
 
-use Diplom\Bundle\AppBundle\Service\Form\ContactModel;
-use Diplom\Data\Model\BaseController;
-use Symfony\Component\Form\FormInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Werkint\Bundle\WebappBundle\Annotation as Rest;

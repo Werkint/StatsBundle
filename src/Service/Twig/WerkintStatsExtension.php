@@ -19,6 +19,8 @@ class WerkintStatsExtension extends AbstractExtension
         StatsDirector $statsDirector
     ) {
         $this->statsDirector = $statsDirector;
+
+        parent::__construct();
     }
 
     /**

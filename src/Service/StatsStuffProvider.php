@@ -3,7 +3,7 @@ namespace Werkint\Bundle\StatsBundle\Service;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Output\OutputInterface;
-use Werkint\Bundle\CommandBundle\Service\Contract\StuffProviderInterface;
+use Werkint\Bundle\FrameworkExtraBundle\Service\Processor\Stuff\StuffProviderInterface;
 
 /**
  * StatsStuffProvider.
