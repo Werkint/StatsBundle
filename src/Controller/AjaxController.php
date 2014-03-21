@@ -3,7 +3,7 @@ namespace Werkint\Bundle\StatsBundle\Controller;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Werkint\Bundle\WebappBundle\Annotation as Rest;
+use Werkint\Bundle\FrameworkExtraBundle\Annotation as Rest;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 
 /**
