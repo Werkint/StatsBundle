@@ -3,6 +3,7 @@ namespace Werkint\Bundle\StatsBundle\Service;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
 use Symfony\Component\Console\Output\OutputInterface;
+use Werkint\Bundle\FrameworkExtraBundle\Service\Logger\IndentedLoggerInterface;
 use Werkint\Bundle\FrameworkExtraBundle\Service\Processor\Stuff\StuffProviderInterface;
 
 /**
@@ -27,17 +28,15 @@ class StatsStuffProvider implements
     // -- Stuff ---------------------------------------
 
     /**
-     * @param OutputInterface       $out
-     * @param ContainerAwareCommand $command
-     * @param bool                  $forced
+     * {@inheritdoc}
      */
     public function process(
-        OutputInterface $out,
+        IndentedLoggerInterface $logger,
         ContainerAwareCommand $command = null,
         $forced = false
     ) {
-        $out->write('Updating stats... ');
+        $logger->write('Updating stats... ');
         $amount = $this->director->updateCache();
-        $out->writeln($amount . ' updated');
+        $logger->writeln($amount . ' updated');
     }
 } 
