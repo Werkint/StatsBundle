@@ -15,7 +15,7 @@
         "werkint/framework-extra-bundle": "0.1.x-dev",
         "werkint/redis-bundle":           "0.1.x-dev",
 
-        "php": ">=5.4"
+        "php": ">=5.5"
     },
     "require-dev": {
         "werkint/webapp-bundle": "0.1.x-dev"
@@ -26,7 +26,8 @@
     },
     "autoload":    {
         "psr-4": {
-            "Werkint\\Bundle\\StatsBundle\\": "src/"
+            "Werkint\\Bundle\\StatsBundle\\":        "src/",
+            "Werkint\\Bundle\\StatsBundle\\Tests\\": "tests/"
         }
     },
     "extra":       {
