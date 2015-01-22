@@ -2,7 +2,6 @@
 namespace Werkint\Bundle\StatsBundle\Service;
 
 use Symfony\Bundle\FrameworkBundle\Command\ContainerAwareCommand;
-use Symfony\Component\Console\Output\OutputInterface;
 use Werkint\Bundle\FrameworkExtraBundle\Service\Logger\IndentedLoggerInterface;
 use Werkint\Bundle\FrameworkExtraBundle\Service\Processor\Stuff\StuffProviderInterface;
 

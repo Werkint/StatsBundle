@@ -13,8 +13,8 @@ use Symfony\Component\DependencyInjection\Reference;
 class StatsProviderPass implements
     CompilerPassInterface
 {
-    const CLASS_SRV = 'werkint.stats';
-    const CLASS_TAG = 'werkint.stats.provider';
+    const CLASS_SRV = 'werkint_stats.statsdirector';
+    const CLASS_TAG = 'werkint_stats.provider';
 
     /**
      * {@inheritdoc}
@@ -34,9 +34,7 @@ class StatsProviderPass implements
             foreach ($attributes as $a) {
                 $definition->addMethodCall(
                     'addProvider', [
-                        $a['class'],
-                        new Reference($id),
-                        isset($a['realtime']) ? (bool)$a['realtime'] : false
+                        new Reference($id)
                     ]
                 );
             }

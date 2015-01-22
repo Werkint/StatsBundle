@@ -1,6 +1,8 @@
 <?php
 namespace Werkint\Bundle\StatsBundle\Service;
 
+use Werkint\Bundle\StatsBundle\Service\Provider\StatsProviderInterface;
+
 /**
  * ProviderRow.
  *
@@ -64,6 +66,15 @@ class ProviderRow
     public function getName()
     {
         return $this->name;
+    }
+
+    /**
+     * @return string
+     */
+    public function getCacheName()
+    {
+        $cacheName = $this->getProvider()->getCacheName($this);
+        return $cacheName ? $cacheName : $this->name;
     }
 
     /**

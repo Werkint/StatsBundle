@@ -1,31 +1,65 @@
+parameters:
+  werkint_stats.statsdirector.class:
+    Werkint\Bundle\StatsBundle\Service\StatsDirector
+  werkint_stats.cacheproxy.class:
+    Werkint\Bundle\StatsBundle\Model\CacheProxy
+  werkint_stats.eventlistener.cacheproxylistener.class:
+    Werkint\Bundle\StatsBundle\EventListener\CacheProxyListener
+  werkint_stats.stuffprovider.class:
+    Werkint\Bundle\StatsBundle\Service\StatsStuffProvider
+  werkint_stats.security.voter.statsvoter.class:
+    Werkint\Bundle\StatsBundle\Service\Security\Voter\StatsVoter
+  werkint_stats.twig.werkintstatsextension.class:
+    Werkint\Bundle\StatsBundle\Service\Twig\WerkintStatsExtension
+
 services:
-    # Services
-    werkint.stats:
-        class: Werkint\Bundle\StatsBundle\Service\StatsDirector
-        arguments:
-            - @security.context
-        tags:
-            - { name: werkint.redis.cache, scope: root, ns: werkint.stats }
-    werkint.stats.stuffprovider:
-        class: Werkint\Bundle\StatsBundle\Service\StatsStuffProvider
-        arguments:
-            - @werkint.stats
-        tags:
-            - { name: werkint.stuff.provider, class: werkint.stats, tick: 10 }
+  werkint_stats.statsdirector:
+    class: %werkint_stats.statsdirector.class%
+    arguments:
+      - @security.context
+      - %kernel.debug%
+    tags:
+      - { name: werkint.redis.cache, scope: root, ns: werkint_stats }
+  werkint_stats.cacheproxy:
+    class: %werkint_stats.cacheproxy.class%
+    arguments:
+      - @doctrine.orm.entity_manager
+      - @werkint_stats.statsdirector
+  werkint_stats.annotation_driver:
+    class: Werkint\Bundle\StatsBundle\Service\Metadata\AnnotationDriver
+    arguments:
+      - @annotations.cached_reader
+  werkint_stats.metadata_factory:
+    class: Metadata\MetadataFactory
+    arguments:
+      - @werkint_stats.annotation_driver
+  werkint_stats.eventlistener.cacheproxylistener:
+    class: %werkint_stats.eventlistener.cacheproxylistener.class%
+    arguments:
+      - @service_container # For resolving circular reference
+    tags:
+      - { name: doctrine.event_subscriber }
 
-    # Security
-    werkint.stats.security.voter.statsvoter:
-        class: Werkint\Bundle\StatsBundle\Service\Security\Voter\StatsVoter
-        arguments:
-            - @security.role_hierarchy
-            - %werkint_stats.roles%
-        tags:
-            - { name: security.voter }
+  werkint_stats.stuffprovider:
+    class: %werkint_stats.stuffprovider.class%
+    arguments:
+      - @werkint_stats.statsdirector
+    tags:
+      - { name: werkint.stuff.provider, class: werkint_stats, tick: 360 }
 
-    # Twig extension
-    werkint.stats.twig.werkintstatsextension:
-        class: Werkint\Bundle\StatsBundle\Service\Twig\WerkintStatsExtension
-        arguments:
-            - @werkint.stats
-        tags:
-            - { name: twig.extension }
+  # Security
+  werkint_stats.security.voter.statsvoter:
+    class: %werkint_stats.security.voter.statsvoter.class%
+    arguments:
+      - @security.role_hierarchy
+      - %werkint_stats.roles%
+    tags:
+      - { name: security.voter }
+
+  # Twig extension
+  werkint_stats.twig.werkintstatsextension:
+    class: %werkint_stats.twig.werkintstatsextension.class%
+    arguments:
+      - @werkint_stats.statsdirector
+    tags:
+      - { name: twig.extension }

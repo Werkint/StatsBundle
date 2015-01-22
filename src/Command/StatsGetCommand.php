@@ -8,17 +8,17 @@ use Symfony\Component\Console\Input\InputInterface;
 use Symfony\Component\Console\Output\OutputInterface;
 
 /**
- * StatsCommand.
+ * StatsGetCommand.
  *
  * @author Bogdan Yurov <bogdan@yurov.me>
  */
-class StatsCommand extends ContainerAwareCommand
+class StatsGetCommand extends ContainerAwareCommand
 {
     protected function configure()
     {
         $this
             ->setName('werkint:stats:get')
-            ->setDescription('Returs stats value')
+            ->setDescription('Returns stats value')
             ->addArgument('name')
             ->addArgument('options', InputArgument::OPTIONAL);
     }
@@ -55,6 +55,6 @@ class StatsCommand extends ContainerAwareCommand
 
     protected function serviceStatsDirector()
     {
-        return $this->getContainer()->get('werkint.stats');
+        return $this->getContainer()->get('werkint_stats.statsdirector');
     }
 }

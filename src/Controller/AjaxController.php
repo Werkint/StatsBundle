@@ -15,9 +15,12 @@ class AjaxController extends Controller
 {
     // -- Services ---------------------------------------
 
+    /**
+     * @return \Werkint\Bundle\StatsBundle\Service\StatsDirector
+     */
     protected function serviceStats()
     {
-        return $this->get('werkint.stats');
+        return $this->get('werkint_stats.statsdirector');
     }
 
     // -- Actions ---------------------------------------

@@ -4,41 +4,37 @@ namespace Werkint\Bundle\StatsBundle\Service;
 use Doctrine\Common\Cache\CacheProvider;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\SecurityContextInterface;
+use Werkint\Bundle\StatsBundle\Service\Provider\StatsProviderInterface;
 
 /**
  * StatsDirector.
  *
  * @author Bogdan Yurov <bogdan@yurov.me>
  */
-class StatsDirector
+class StatsDirector implements
+    StatsDirectorInterface
 {
-    const CACHE_PREFIX = 'provider_';
-
+    protected $isDebug;
     protected $security;
     protected $cache;
 
     /**
      * @param SecurityContextInterface $security
+     * @param bool                     $isDebug
      * @param CacheProvider            $cache
      */
     public function __construct(
         SecurityContextInterface $security,
+        $isDebug,
         CacheProvider $cache
     ) {
         $this->security = $security;
         $this->cache = $cache;
+        $this->isDebug = $isDebug;
     }
 
     /**
-     * Returns stats by key.
-     * if public is true - stat is checked for being available through controller
-     * if public is null - the stat is checked for role (if needed)
-     *
-     * @param string    $name
-     * @param array     $options
-     * @param bool|null $public
-     * @throws AccessDeniedException If acccess restricted
-     * @return int
+     * {@inheritdoc}
      */
     public function getStat(
         $name,
@@ -48,7 +44,7 @@ class StatsDirector
         $provider = $this->getProvider($name);
 
         if ($public) {
-            if (!$provider->getProvider()->isPublic($name)) {
+            if (!$provider->isStatPublic($name)) {
                 throw new AccessDeniedException('Public access to provider was restriced');
             }
         }
@@ -57,14 +53,15 @@ class StatsDirector
             throw new AccessDeniedException('Access to provider denied');
         }
 
-        if ($provider->getCached() === false) {
-            $provider->setCached($provider->getProvider()->getStat($name, $options));
-            if (!$provider->isRealtime()) {
-                $this->saveToCache($provider);
-            }
+        $cacheName = $provider->getStatCacheName($name, $options);
+        $cacheName = $cacheName ?: $name;
+        $value = $this->cache->fetch($cacheName);
+        if ($this->isDebug || !$value) {
+            $value = $provider->getStat($name, $options);
+            $this->cache->save($cacheName, $value);
         }
 
-        return $provider->getCached();
+        return $value;
     }
 
     /**
@@ -75,13 +72,16 @@ class StatsDirector
     public function updateCache()
     {
         $i = 0;
+        $this->cache->deleteAll();
         foreach ($this->providers as $name => $provider) {
-            if ($provider->isRealtime()) {
+            try {
+                $cacheName = $provider->getStatCacheName($name, []);
+            } catch (\Exception $e) {
                 continue;
             }
-            $provider->setCached(false);
-            $this->saveToCache($provider);
-            $this->getStat($name, [], false);
+            $cacheName = $cacheName ?: $name;
+            $value = $provider->getStat($name, []);
+            $this->cache->save($cacheName, $value);
             $i++;
         }
 
@@ -90,29 +90,23 @@ class StatsDirector
 
     // -- List ---------------------------------------
 
-    /** @var ProviderRow[] */
+    /** @var StatsProviderInterface[] */
     protected $providers = [];
 
     /**
-     * @param string                 $name
      * @param StatsProviderInterface $provider
-     * @param bool                   $isRealtime
      */
     public function addProvider(
-        $name,
-        StatsProviderInterface $provider,
-        $isRealtime
+        StatsProviderInterface $provider
     ) {
-        $this->providers[$name] = new ProviderRow(
-            $provider,
-            $name,
-            $isRealtime
-        );
+        foreach ($provider->getStatsSupported() as $name) {
+            $this->providers[$name] = $provider;
+        }
     }
 
     /**
      * @param string $name
-     * @return ProviderRow
+     * @return StatsProviderInterface
      * @throws \InvalidArgumentException
      */
     protected function getProvider($name)
@@ -121,24 +115,7 @@ class StatsDirector
             throw new \InvalidArgumentException('Wrong provider: ' . $name);
         }
         $provider = $this->providers[$name];
-        if ($provider->getCached() === false && !$provider->isRealtime()) {
-            $provider->setCached($this->cache->fetch(
-                static::CACHE_PREFIX . $provider->getName()
-            ));
-        }
 
         return $provider;
-    }
-
-    /**
-     * @param ProviderRow $provider
-     * @return bool
-     */
-    protected function saveToCache(ProviderRow $provider)
-    {
-        return $this->cache->save(
-            static::CACHE_PREFIX . $provider->getName(),
-            $provider->getCached()
-        );
     }
 }
