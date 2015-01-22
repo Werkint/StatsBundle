@@ -1,6 +1,8 @@
 <?php
 namespace Werkint\Bundle\StatsBundle\Model;
 
+use JMS\Serializer\Annotation as Serializer;
+
 /**
  * TODO: write "CachableStatsAware" info
  *
@@ -9,6 +11,7 @@ namespace Werkint\Bundle\StatsBundle\Model;
 trait CacheableStatsAware
 {
     /**
+     * @Serializer\Exclude()
      * @var CacheProxy|null
      */
     protected $_cacheablestatsaware_proxy;
