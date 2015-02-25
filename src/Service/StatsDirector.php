@@ -49,7 +49,7 @@ class StatsDirector implements
             }
         }
 
-        if ($public === null && !$this->security->isGranted('view', $provider)) {
+        if (!$provider->isStatPublic($name) && $this->security->isGranted('view', $provider)) {
             throw new AccessDeniedException('Access to provider denied');
         }
 
