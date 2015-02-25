@@ -3,6 +3,7 @@ namespace Werkint\Bundle\StatsBundle\Model;
 
 use Doctrine\ORM\EntityManagerInterface;
 use Werkint\Bundle\StatsBundle\Service\StatsDirectorInterface;
+use Werkint\Bundle\StatsBundle\Service\Normalizer;
 
 /**
  * TODO: write "CacheProxy" info
@@ -14,16 +15,25 @@ class CacheProxy
     protected $manager;
     protected $director;
 
+
+    /**
+     * @var Normalizer
+     */
+    protected $normalizer;
+
     /**
      * @param EntityManagerInterface $manager
      * @param StatsDirectorInterface $director
+     * @param Normalizer $normalizer
      */
     public function __construct(
         EntityManagerInterface $manager,
-        StatsDirectorInterface $director
+        StatsDirectorInterface $director,
+        Normalizer $normalizer
     ) {
         $this->manager = $manager;
         $this->director = $director;
+        $this->normalizer = $normalizer;
     }
 
     /**
@@ -33,8 +43,9 @@ class CacheProxy
      */
     public function getStatsForObject($object, $name)
     {
-        $metadata = $this->manager->getClassMetadata(get_class($object));
-        $class = $metadata->getName();
+        $metadata = $this->normalizer->getMetaData($object);
+
+        $class = $metadata['class'];
         return $this->director->getStat($class . '.' . $name, [
             'class'    => $class,
             'property' => $name,

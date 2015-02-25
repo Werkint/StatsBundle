@@ -25,6 +25,7 @@ services:
     arguments:
       - @doctrine.orm.entity_manager
       - @werkint_stats.statsdirector
+      - @werkint_stats.normalizer
   werkint_stats.annotation_driver:
     class: Werkint\Bundle\StatsBundle\Service\Metadata\AnnotationDriver
     arguments:
@@ -63,3 +64,7 @@ services:
       - @werkint_stats.statsdirector
     tags:
       - { name: twig.extension }
+  werkint_stats.normalizer:
+     class: Werkint\Bundle\StatsBundle\Service\Normalizer
+     arguments:
+        - @doctrine.orm.entity_manager
