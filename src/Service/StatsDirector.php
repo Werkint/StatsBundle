@@ -69,18 +69,18 @@ class StatsDirector implements
      *
      * @return int
      */
-    public function updateCache()
+    public function updateCache(Array $array)
     {
         $i = 0;
         $this->cache->deleteAll();
         foreach ($this->providers as $name => $provider) {
             try {
-                $cacheName = $provider->getStatCacheName($name, []);
+                $cacheName = $provider->getStatCacheName($name, $array);
             } catch (\Exception $e) {
                 continue;
             }
             $cacheName = $cacheName ?: $name;
-            $value = $provider->getStat($name, []);
+            $value = $provider->getStat($name, $array);
             $this->cache->save($cacheName, $value);
             $i++;
         }
