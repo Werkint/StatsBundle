@@ -5,8 +5,6 @@ parameters:
     Werkint\Bundle\StatsBundle\Model\CacheProxy
   werkint_stats.eventlistener.cacheproxylistener.class:
     Werkint\Bundle\StatsBundle\EventListener\CacheProxyListener
-  werkint_stats.stuffprovider.class:
-    Werkint\Bundle\StatsBundle\Service\StatsStuffProvider
   werkint_stats.security.voter.statsvoter.class:
     Werkint\Bundle\StatsBundle\Service\Security\Voter\StatsVoter
   werkint_stats.twig.werkintstatsextension.class:
@@ -40,13 +38,6 @@ services:
       - @service_container # For resolving circular reference
     tags:
       - { name: doctrine.event_subscriber }
-
-  werkint_stats.stuffprovider:
-    class: %werkint_stats.stuffprovider.class%
-    arguments:
-      - @werkint_stats.statsdirector
-    tags:
-      - { name: werkint.stuff.provider, class: werkint_stats, tick: 360 }
 
   # Security
   werkint_stats.security.voter.statsvoter:

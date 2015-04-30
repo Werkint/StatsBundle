@@ -69,7 +69,7 @@ class StatsDirector implements
      *
      * @return int
      */
-    public function updateCache(Array $array)
+    public function updateCache(array $array)
     {
         $i = 0;
         $this->cache->deleteAll();
