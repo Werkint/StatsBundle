@@ -5,10 +5,10 @@ use Doctrine\Common\EventSubscriber;
 use Doctrine\ORM;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Werkint\Bundle\StatsBundle\Model\CacheableStatsAwareInterface;
-use Werkint\Bundle\StatsBundle\Model\CacheProxy;
+use Werkint\Bundle\StatsBundle\Service\ObjectCacheManager;
 
 /**
- * TODO: write "CacheProxyListener" info
+ * Injects stats provider to objects
  *
  * @author Bogdan Yurov <bogdan@yurov.me>
  */
@@ -32,7 +32,7 @@ class CacheProxyListener implements
     public function getSubscribedEvents()
     {
         return [
-            //ORM\Events::loadClassMetadata,
+            //ORM\Events::loadClassMetadata, TODO: doctine
             ORM\Events::postLoad,
         ];
     }
@@ -45,15 +45,15 @@ class CacheProxyListener implements
         $entity = $args->getEntity();
 
         if ($entity instanceof CacheableStatsAwareInterface) {
-            $entity->setCacheableStatsProxy($this->serviceCacheProxy());
+            $entity->setCacheableStatsProxy($this->serviceObjectCacheManager());
         }
     }
 
     /**
-     * @return CacheProxy
+     * @return ObjectCacheManager
      */
-    protected function serviceCacheProxy()
+    protected function serviceObjectCacheManager()
     {
-        return $this->container->get('werkint_stats.cacheproxy');
+        return $this->container->get('werkint_stats.objectcachemanager');
     }
 }

@@ -4,7 +4,7 @@ namespace Werkint\Bundle\StatsBundle\Service;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 
 /**
- * TODO: write "StatsDirectorInterface" info
+ * Provides cached stats
  *
  * @author Bogdan Yurov <bogdan@yurov.me>
  */
@@ -13,17 +13,19 @@ interface StatsDirectorInterface
     /**
      * Returns stats by key.
      * if public is true - stat is checked for being available through controller
-     * if public is null - the stat is checked for role (if needed)
+     * if public is null - the stat is checked for a role (if needed)
      *
      * @param string    $name
      * @param array     $options
      * @param bool|null $public
+     * @param bool      $forceUpdate
      * @throws AccessDeniedException If acccess restricted
      * @return int
      */
     public function getStat(
         $name,
         array $options = [],
-        $public = null
+        $public = null,
+        $forceUpdate = false
     );
 }

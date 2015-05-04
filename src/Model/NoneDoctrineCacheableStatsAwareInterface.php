@@ -1,6 +1,8 @@
 <?php
 namespace Werkint\Bundle\StatsBundle\Model;
 
+use Werkint\Bundle\StatsBundle\Service\ObjectCacheManager;
+
 /**
  * TODO: write "CacheableStatsAwareInterface" info
  *
@@ -9,7 +11,7 @@ namespace Werkint\Bundle\StatsBundle\Model;
 interface NoneDoctrineCacheableStatsAwareInterface
 {
     /**
-     * @param CacheProxy $proxy
+     * @param ObjectCacheManager $proxy
      */
-    public function setCacheableStatsProxy(CacheProxy $proxy);
+    public function setCacheableStatsProxy(ObjectCacheManager $proxy);
 }

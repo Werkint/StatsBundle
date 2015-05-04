@@ -1,15 +1,17 @@
 <?php
 namespace Werkint\Bundle\StatsBundle\Model;
 
+use Werkint\Bundle\StatsBundle\Service\ObjectCacheManager;
+
 /**
- * TODO: write "CacheableStatsAwareInterface" info
+ * Объект с кеширующими полями
  *
  * @author Bogdan Yurov <bogdan@yurov.me>
  */
 interface CacheableStatsAwareInterface
 {
     /**
-     * @param CacheProxy $proxy
+     * @param ObjectCacheManager $proxy
      */
-    public function setCacheableStatsProxy(CacheProxy $proxy);
+    public function setCacheableStatsProxy(ObjectCacheManager $proxy);
 }

@@ -1,8 +1,8 @@
 parameters:
   werkint_stats.statsdirector.class:
     Werkint\Bundle\StatsBundle\Service\StatsDirector
-  werkint_stats.cacheproxy.class:
-    Werkint\Bundle\StatsBundle\Model\CacheProxy
+  werkint_stats.objectcachemanager.class:
+    Werkint\Bundle\StatsBundle\Service\ObjectCacheManager
   werkint_stats.eventlistener.cacheproxylistener.class:
     Werkint\Bundle\StatsBundle\EventListener\CacheProxyListener
   werkint_stats.security.voter.statsvoter.class:
@@ -18,8 +18,8 @@ services:
       - %kernel.debug%
     tags:
       - { name: werkint.redis.cache, scope: root, ns: werkint_stats }
-  werkint_stats.cacheproxy:
-    class: %werkint_stats.cacheproxy.class%
+  werkint_stats.objectcachemanager:
+    class: %werkint_stats.objectcachemanager.class%
     arguments:
       - @doctrine.orm.entity_manager
       - @werkint_stats.statsdirector

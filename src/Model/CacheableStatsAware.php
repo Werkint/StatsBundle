@@ -2,9 +2,10 @@
 namespace Werkint\Bundle\StatsBundle\Model;
 
 use JMS\Serializer\Annotation as Serializer;
+use Werkint\Bundle\StatsBundle\Service\ObjectCacheManager;
 
 /**
- * TODO: write "CachableStatsAware" info
+ * Проксирует запросы закешированных значений к менеджеру кеша
  *
  * @author Bogdan Yurov <bogdan@yurov.me>
  */
@@ -12,7 +13,7 @@ trait CacheableStatsAware
 {
     /**
      * @Serializer\Exclude()
-     * @var CacheProxy|null
+     * @var ObjectCacheManager|null
      */
     protected $_cacheablestatsaware_proxy;
 
@@ -26,9 +27,9 @@ trait CacheableStatsAware
     }
 
     /**
-     * @param CacheProxy $proxy
+     * @param ObjectCacheManager $proxy
      */
-    public function setCacheableStatsProxy(CacheProxy $proxy)
+    public function setCacheableStatsProxy(ObjectCacheManager $proxy)
     {
         $this->_cacheablestatsaware_proxy = $proxy;
     }

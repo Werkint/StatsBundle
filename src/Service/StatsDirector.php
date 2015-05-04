@@ -39,13 +39,14 @@ class StatsDirector implements
     public function getStat(
         $name,
         array $options = [],
-        $public = null
+        $public = null,
+        $forceUpdate = false
     ) {
         $provider = $this->getProvider($name);
 
         if ($public) {
             if (!$provider->isStatPublic($name)) {
-                throw new AccessDeniedException('Public access to provider was restriced');
+                throw new AccessDeniedException('Public access to provider was restricted');
             }
         }
 
@@ -56,7 +57,7 @@ class StatsDirector implements
         $cacheName = $provider->getStatCacheName($name, $options);
         $cacheName = $cacheName ?: $name;
         $value = $this->cache->fetch($cacheName);
-        if ($this->isDebug || !$value) {
+        if ($this->isDebug || $forceUpdate || !$value) {
             $value = $provider->getStat($name, $options);
             $this->cache->save($cacheName, $value);
         }
