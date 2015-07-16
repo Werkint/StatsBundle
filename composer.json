@@ -13,7 +13,7 @@
         "symfony/framework-bundle": "*",
 
         "werkint/framework-extra-bundle": "0.1.x-dev",
-        "werkint/redis-bundle":           "0.1.x-dev",
+        "werkint/cache-bundle":           "0.1.x-dev",
 
         "php": ">=5.5"
     },

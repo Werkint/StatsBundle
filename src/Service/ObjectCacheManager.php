@@ -51,6 +51,7 @@ class ObjectCacheManager
     {
         $metadata = $this->normalizer->getMetaData($object);
         $class = $this->getObjectStatsName($object, $name);
+
         return $this->director->getStat($class, [
             'class'    => $class,
             'property' => $name,
