@@ -16,8 +16,6 @@ services:
     arguments:
       - @security.context
       - %kernel.debug%
-    tags:
-      - { name: werkint.redis.cache, scope: root, ns: werkint_stats }
   werkint_stats.objectcachemanager:
     class: %werkint_stats.objectcachemanager.class%
     arguments:

@@ -4,32 +4,36 @@ namespace Werkint\Bundle\StatsBundle\Service;
 use Doctrine\Common\Cache\CacheProvider;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\SecurityContextInterface;
+use Werkint\Bundle\CacheBundle\Service\Annotation\CacheAware;
+use Werkint\Bundle\CacheBundle\Service\Contract\CacheAwareInterface;
+use Werkint\Bundle\CacheBundle\Service\Contract\CacheAwareTrait;
 use Werkint\Bundle\StatsBundle\Service\Provider\StatsProviderInterface;
 
 /**
- * StatsDirector.
+ * @see StatsDirectorInterface
  *
  * @author Bogdan Yurov <bogdan@yurov.me>
+ *
+ * @CacheAware(namespace="werkint_stats")
  */
 class StatsDirector implements
-    StatsDirectorInterface
+    StatsDirectorInterface,
+    CacheAwareInterface
 {
+    use CacheAwareTrait;
+
     protected $isDebug;
     protected $security;
-    protected $cache;
 
     /**
      * @param SecurityContextInterface $security
      * @param bool                     $isDebug
-     * @param CacheProvider            $cache
      */
     public function __construct(
         SecurityContextInterface $security,
-        $isDebug,
-        CacheProvider $cache
+        $isDebug
     ) {
         $this->security = $security;
-        $this->cache = $cache;
         $this->isDebug = $isDebug;
     }
 
@@ -56,10 +60,10 @@ class StatsDirector implements
 
         $cacheName = $provider->getStatCacheName($name, $options);
         $cacheName = $cacheName ?: $name;
-        $value = $this->cache->fetch($cacheName);
+        $value = $this->cacheProvider->fetch($cacheName);
         if ($this->isDebug || $forceUpdate || !$value) {
             $value = $provider->getStat($name, $options);
-            $this->cache->save($cacheName, $value);
+            $this->cacheProvider->save($cacheName, $value);
         }
 
         return $value;
@@ -73,7 +77,7 @@ class StatsDirector implements
     public function updateCache(array $array)
     {
         $i = 0;
-        $this->cache->deleteAll();
+        $this->cacheProvider->deleteAll();
         foreach ($this->providers as $name => $provider) {
             try {
                 $cacheName = $provider->getStatCacheName($name, $array);
@@ -82,7 +86,7 @@ class StatsDirector implements
             }
             $cacheName = $cacheName ?: $name;
             $value = $provider->getStat($name, $array);
-            $this->cache->save($cacheName, $value);
+            $this->cacheProvider->save($cacheName, $value);
             $i++;
         }
 
