@@ -1,16 +1,16 @@
 <?php
 namespace Werkint\Bundle\StatsBundle\Service;
 
-use Doctrine\Common\Cache\CacheProvider;
 use Symfony\Component\Security\Core\Exception\AccessDeniedException;
 use Symfony\Component\Security\Core\SecurityContextInterface;
 use Werkint\Bundle\CacheBundle\Service\Annotation\CacheAware;
 use Werkint\Bundle\CacheBundle\Service\Contract\CacheAwareInterface;
 use Werkint\Bundle\CacheBundle\Service\Contract\CacheAwareTrait;
 use Werkint\Bundle\StatsBundle\Service\Provider\StatsProviderInterface;
+use Werkint\Bundle\StatsBundle\Service\Provider\StatsTimeoutAwareProviderInterface;
 
 /**
- * @see StatsDirectorInterface
+ * @see    StatsDirectorInterface
  *
  * @author Bogdan Yurov <bogdan@yurov.me>
  *
@@ -58,15 +58,29 @@ class StatsDirector implements
             throw new AccessDeniedException('Access to provider denied');
         }
 
+        $getStat = function () use ($provider, $name, $options) {
+            $value = $provider->getStat($name, $options);
+            return [
+                'value'     => $value,
+                'timestamp' => microtime(true),
+            ];
+        };
+
         $cacheName = $provider->getStatCacheName($name, $options);
         $cacheName = $cacheName ?: $name;
+
         $value = $this->cacheProvider->fetch($cacheName);
         if ($this->isDebug || $forceUpdate || !$value) {
-            $value = $provider->getStat($name, $options);
-            $this->cacheProvider->save($cacheName, $value);
+            $this->cacheProvider->save($cacheName, $value = $getStat());
+        } else {
+            if ($provider instanceof StatsTimeoutAwareProviderInterface) {
+                if (microtime(true) - $value['timestamp'] > $provider->getStatTimeout($name)) {
+                    $this->cacheProvider->save($cacheName, $value = $getStat());
+                }
+            }
         }
 
-        return $value;
+        return $value['value'];
     }
 
     /**
@@ -86,7 +100,10 @@ class StatsDirector implements
             }
             $cacheName = $cacheName ?: $name;
             $value = $provider->getStat($name, $array);
-            $this->cacheProvider->save($cacheName, $value);
+            $this->cacheProvider->save($cacheName, [
+                'value'     => $value,
+                'timestamp' => microtime(true),
+            ]);
             $i++;
         }
 
