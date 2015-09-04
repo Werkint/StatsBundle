@@ -33,6 +33,7 @@ class CacheProxyListener implements
     {
         return [
             //ORM\Events::loadClassMetadata, TODO: doctine
+            ORM\Events::postPersist,
             ORM\Events::postLoad,
         ];
     }
@@ -47,6 +48,14 @@ class CacheProxyListener implements
         if ($entity instanceof CacheableStatsAwareInterface) {
             $entity->setCacheableStatsProxy($this->serviceObjectCacheManager());
         }
+    }
+
+    /**
+     * @param ORM\Event\LifecycleEventArgs $args
+     */
+    public function postPersist(ORM\Event\LifecycleEventArgs $args)
+    {
+        $this->postLoad($args);
     }
 
     /**
