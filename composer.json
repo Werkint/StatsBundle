@@ -12,7 +12,7 @@
     "require":     {
         "symfony/framework-bundle": "*",
 
-        "werkint/framework-extra-bundle": "~1.0.1",
+        "werkint/framework-extra-bundle": "~1.1.0",
         "werkint/cache-bundle":           "0.1.x-dev",
 
         "php": ">=5.5"
